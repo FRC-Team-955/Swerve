@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 public class Settings{
     public static final class SwerveConstants {
         /* Angle Motor PID Values */
@@ -33,6 +35,18 @@ public class Settings{
     public static double gearratio = 0.1;
 
     public static double driveVelocityConversion = gearratio * wheelCircumference;
+    
+    public static double trackWidth = 0.1;
+    
+
+    public static final edu.wpi.first.math.geometry.Translation2d[] swerveModuleLocations = {
+        new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, trackWidth / 2.0),
+        new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, -trackWidth / 2.0),
+        new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, trackWidth / 2.0),
+        new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, -trackWidth / 2.0)
+    };
+
+    public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(swerveModuleLocations);
 
     }
 
