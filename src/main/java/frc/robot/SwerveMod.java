@@ -74,7 +74,7 @@ public class SwerveMod{
         driveEncoder = driveMotor.getAlternateEncoder(8192);
         // driveEncoder = driveMotor.getEncoder();
 
-        driveEncoder.setVelocityConversionFactor(Settings.SwerveConstants.driveVelocityConversion);
+        // driveEncoder.setVelocityConversionFactor(Settings.SwerveConstants.driveVelocityConversion);
 
         // Drive PID
         drivePID = driveMotor.getPIDController();
@@ -100,17 +100,17 @@ public class SwerveMod{
             double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
             driveMotor.set(percentOutput);
         }else{
-            double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond);
-            drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond))
+            double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
+            drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
         }
 
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
-        anglePID.setReference(Conversions.degreesToFalcon(angle), ControlType.kPosition);
+        anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
         lastAngle = angle;
     }
 
     public void resetToAbsolute(){
-        double absolutePosition = Conversions.degressToFalcon(getCanCoder().getDegrees() - angleOffset);
+        double absolutePosition = Conversions.degreesToNeo(getCanCoder().getDegrees() - angleOffset, Settings.SwerveConstants.angleGearRatio);
         angleEncoder.setPosition(absolutePosition);
     }
     public Rotation2d getCanCoder(){
@@ -119,11 +119,11 @@ public class SwerveMod{
 
 
     public SwerveModuleState getState(){
-        double velocity = driveEncoder.getVelocity();
-        Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(angleEncoder.getAbsolutePosition()));
+        double velocity = Conversions.neoToMPS(driveEncoder.getVelocity(),Settings.SwerveConstants.driveGearRatio);
+        Rotation2d angle = Rotation2d.fromDegrees(Conversions.neoToDegrees(angleEncoder.getAbsolutePosition(), Settings.SwerveConstants.angleGearRatio));
         return new SwerveModuleState(velocity, angle);
         // double velocity = driveMotor.getSelectedSensorVelocity() wheelCircumference, Constants.SwerveConstants.driveGearRatio
-        // Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(angleMotor.getSelectedSensorPosition(), Constants.SwerveConstants.angleGearRatio));
+        // Rotation2d angle = Rotation2d.fromDegrees(Conversions.neoToDegrees(angleMotor.getSelectedSensorPosition(), Constants.SwerveConstants.angleGearRatio));
         // return new SwerveModuleState(velocity, angle);
     }
 

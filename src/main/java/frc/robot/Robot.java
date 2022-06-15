@@ -26,8 +26,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().x(), controlBoard.getSwerveTranslation().y());
-double swerveRotation = controlBoard.getSwerveRotation();
+    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
+    double swerveRotation = controlBoard.getSwerveRotation();
     swerve.drive(swerveTranslation, swerveRotation, true, true);
   }
 

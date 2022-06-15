@@ -33,9 +33,12 @@ public class Settings{
     public static IdleMode driveIdleMode = IdleMode.kBrake;
 
     public static double wheelCircumference = 6;
-    public static double gearratio = 0.1;
+    public static double driveGearRatio = 0.1;
 
-    public static double driveVelocityConversion = gearratio * wheelCircumference;
+    public static double angleGearRatio = 0.1;
+
+
+    public static double driveVelocityConversion = driveGearRatio * wheelCircumference;
     
     public static double trackWidth = 0.1;
     
