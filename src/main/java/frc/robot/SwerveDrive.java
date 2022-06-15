@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
@@ -46,8 +47,8 @@ public class SwerveDrive{
         mLocked = lock;
     }
 
-    public Swerve() {        
-        swerveOdometry = new SwerveDriveOdometry(Constants.SwerveConstants.swerveKinematics, new Rotation2d(ahrs.getYaw()));
+    public SwerveDrive() {        
+        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, new Rotation2d(ahrs.getYaw()));
         
         // snapPIDController = new ProfiledPIDController(Constants.SnapConstants.kP,
         //                                               Constants.SnapConstants.kI, 

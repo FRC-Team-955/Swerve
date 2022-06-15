@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -13,6 +14,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  private final SwerveDrive swerve = new SwerveDrive();
+  private final ControlBoard controlBoard = new ControlBoard();
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -21,7 +25,11 @@ public class Robot extends TimedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().x(), controlBoard.getSwerveTranslation().y());
+double swerveRotation = controlBoard.getSwerveRotation();
+    swerve.drive(swerveTranslation, swerveRotation, true, true);
+  }
 
   @Override
   public void autonomousInit() {}
@@ -33,7 +41,9 @@ public class Robot extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  }
 
   @Override
   public void disabledInit() {}
