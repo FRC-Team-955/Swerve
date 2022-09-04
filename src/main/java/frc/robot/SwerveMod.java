@@ -51,18 +51,22 @@ public class SwerveMod{
         angleMotor = new CANSparkMax(angleMotorID, MotorType.kBrushless);
         angleMotor.setInverted(Settings.SwerveConstants.angleMotorInvert);
         angleMotor.setIdleMode(Settings.SwerveConstants.angleIdleMode);
-        resetToAbsolute();
 
         // Angle Encoder
         angleEncoder = new CANCoder(cancoderID);
         angleEncoder.configFactoryDefault();
-        angleEncoder.configAllSettings(swerveCancoderConfig());
+        CANCoderConfiguration config = new CANCoderConfiguration();
+        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        config.sensorDirection = Settings.SwerveConstants.canCoderInvert;
+        config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+        config.sensorTimeBase = SensorTimeBase.PerSecond;
+        angleEncoder.configAllSettings(config);
 
         // Angle PID
         anglePID = angleMotor.getPIDController();
-        anglePID.setP(anglekP);
-        anglePID.setI(anglekI);
-        anglePID.setD(anglekD);
+        anglePID.setP(Settings.SwerveConstants.angleKP);
+        anglePID.setI(Settings.SwerveConstants.angleKI);
+        anglePID.setD(Settings.SwerveConstants.angleKD);
 
         // Drive Motor
         driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
@@ -83,16 +87,13 @@ public class SwerveMod{
         drivePID.setD(drivekD);
 
         lastAngle = getState().angle.getDegrees();
+        resetToAbsolute();
     }
 
-    public static CANCoderConfiguration swerveCancoderConfig() {
-        CANCoderConfiguration config = new CANCoderConfiguration();
-        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        config.sensorDirection = Settings.SwerveConstants.canCoderInvert;
-        config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        config.sensorTimeBase = SensorTimeBase.PerSecond;
-        return config;
-    }
+    // public static CANCoderConfiguration swerveCancoderConfig() {
+        
+    //     return config;
+    // }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
@@ -107,6 +108,8 @@ public class SwerveMod{
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
         anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
         lastAngle = angle;
+        System.out.print(moduleNumber + ": ");
+        System.out.println(angle);
     }
 
     public void resetToAbsolute(){

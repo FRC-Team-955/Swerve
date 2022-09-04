@@ -19,7 +19,7 @@ public class Conversions{
      * @return Falcon Counts
      */
     public static double degreesToNeo(double degrees, double gearRatio) {
-        double ticks =  degrees / (360.0 / (gearRatio * 2048.0));
+        double ticks =  degrees / (360.0 / (gearRatio * 42));
         return ticks;
     }
 

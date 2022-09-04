@@ -15,20 +15,20 @@ import edu.wpi.first.wpilibj.TimedRobot;
  */
 public class Robot extends TimedRobot {
 
-  private final SwerveDrive swerve = new SwerveDrive();
-  private final ControlBoard controlBoard = new ControlBoard();
+  private SwerveDrive swerve;
+  private ControlBoard controlBoard;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+
+  }
 
   @Override
   public void robotPeriodic() {
-    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
-    double swerveRotation = controlBoard.getSwerveRotation();
-    swerve.drive(swerveTranslation, swerveRotation, true, true);
+    
   }
 
   @Override
@@ -38,11 +38,18 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    
+  swerve = new SwerveDrive();
+  controlBoard = new ControlBoard();
+  
+  }
 
   @Override
   public void teleopPeriodic() {
-
+    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
+    double swerveRotation = controlBoard.getSwerveRotation();
+    swerve.drive(swerveTranslation, swerveRotation, true, false);
   }
 
   @Override

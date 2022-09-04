@@ -60,10 +60,10 @@ public class SwerveDrive{
         zeroGyro();
 
         SwerveMods = new SwerveMod[] {
-            new SwerveMod(0, 0, 4, 0, 0),
-            new SwerveMod(1, 1, 5, 1, 0),
-            new SwerveMod(2, 2, 6, 3, 0),
-            new SwerveMod(3, 3, 7, 4, 0),
+            new SwerveMod(0, 4, 8, 9, 0),
+            new SwerveMod(1, 1, 5, 12, 0),
+            new SwerveMod(2, 3, 2, 11, 0),
+            new SwerveMod(3, 6, 7, 10, 0),
         };
     }
 
