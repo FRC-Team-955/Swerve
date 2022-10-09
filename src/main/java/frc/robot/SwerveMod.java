@@ -108,12 +108,13 @@ public class SwerveMod{
         double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
         anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
         lastAngle = angle;
-        System.out.print(moduleNumber + ": ");
-        System.out.println(angle);
+        // System.out.print(moduleNumber + ": ");
+        // System.out.println(angle);
     }
 
     public void resetToAbsolute(){
         double absolutePosition = Conversions.degreesToNeo(getCanCoder().getDegrees() - angleOffset, Settings.SwerveConstants.angleGearRatio);
+        // System.out.println(absolutePosition);
         angleEncoder.setPosition(absolutePosition);
     }
     public Rotation2d getCanCoder(){

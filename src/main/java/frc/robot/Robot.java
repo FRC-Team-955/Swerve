@@ -42,15 +42,17 @@ public class Robot extends TimedRobot {
     
   swerve = new SwerveDrive();
   controlBoard = new ControlBoard();
+  swerve.resetAnglesToAbsolute();
   
   }
 
   @Override
   public void teleopPeriodic() {
-    // Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
+    Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
+    System.out.println(swerveTranslation);
     // System.out.println(swerveTranslation.getX());
     // System.out.println(swerveTranslation.getY());
-    Translation2d swerveTranslation = new Translation2d(1, 0);
+    // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
     swerve.drive(swerveTranslation, swerveRotation, true, false);
   }

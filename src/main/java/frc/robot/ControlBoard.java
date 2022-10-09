@@ -34,13 +34,18 @@ public class ControlBoard {
         double forwardAxis = joy.getRawAxis(0);
         double strafeAxis = joy.getRawAxis(1);
 
+        // System.out.println(forwardAxis);
+
         Translation2d tAxes = new Translation2d(forwardAxis, strafeAxis);
+        // System.out.println(tAxes);
 
         if (Math.abs(norm(tAxes)) < 0.15) {
             return new Translation2d();
         } else {
             Rotation2d deadband_direction = new Rotation2d(tAxes.getX(), tAxes.getY());
             Translation2d deadband_vector = fromPolar(deadband_direction, 0.15);
+
+            // System.out.println(deadband_direction);
 
             double scaled_x = tAxes.getX() - (deadband_vector.getX()) / (1 - deadband_vector.getX());
             double scaled_y = tAxes.getY() - (deadband_vector.getY()) / (1 - deadband_vector.getY());
