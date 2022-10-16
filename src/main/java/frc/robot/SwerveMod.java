@@ -119,51 +119,52 @@ public class SwerveMod{
     //     return config;
     // }
 
-    // public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
-    //     desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-    //     if(isOpenLoop){
-    //         double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
-    //         driveMotor.set(percentOutput);
-    //     }else{
-    //         double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
-    //         drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
-    //     }
-
-    //     double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
-    //     anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
-    //     lastAngle = angle;
-    //     System.out.print(moduleNumber + ": ");
-    //     System.out.println(getCanCoder().getDegrees());
-        
-    //     // System.out.println(angle);
-    // }
-
-    public void setDesiredState(SwerveModuleState state) {
-
-        Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
-
-        double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
-        // return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
-
-        // Calculate the drive motor output from the drive PID controller.
-        double driveOutput = state.speedMetersPerSecond;
-
-        if (Math.abs(delta) > 90) {
-            driveOutput *= -1;
-            delta -= Math.signum(delta) * 180;
+    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
+        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+        if(isOpenLoop){
+            double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
+            driveMotor.set(percentOutput);
+        }else{
+            double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
+            drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
         }
 
-        adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
-
-        m_turningController.setReference(
-            adjustedAngle.getDegrees(),
-            ControlType.kPosition
-        );        
-
-        SmartDashboard.putNumber("Commanded Velocity", driveOutput);
-
-        m_driveController.setReference(driveOutput, ControlType.kVelocity, 0, Constants.ModuleConstants.kDriveFF * driveOutput);
+        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
+        anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
+        lastAngle = angle;
+        System.out.print(moduleNumber + ": ");
+        System.out.println(getCanCoder().getDegrees());
+        
+        // System.out.println(angle);
     }
+
+    //TripleHelix 
+    // public void setDesiredState(SwerveModuleState state) {
+
+    //     Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
+
+    //     double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
+    //     // return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
+
+    //     // Calculate the drive motor output from the drive PID controller.
+    //     double driveOutput = state.speedMetersPerSecond;
+
+    //     if (Math.abs(delta) > 90) {
+    //         driveOutput *= -1;
+    //         delta -= Math.signum(delta) * 180;
+    //     }
+
+    //     adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
+
+    //     m_turningController.setReference(
+    //         adjustedAngle.getDegrees(),
+    //         ControlType.kPosition
+    //     );        
+
+    //     SmartDashboard.putNumber("Commanded Velocity", driveOutput);
+
+    //     m_driveController.setReference(driveOutput, ControlType.kVelocity, 0, Constants.ModuleConstants.kDriveFF * driveOutput);
+    // }
 
 
     public void resetToAbsolute(){
