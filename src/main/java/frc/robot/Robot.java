@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
     // System.out.println(swerveTranslation.getY());
     // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
-    swerve.drive(swerveTranslation, swerveRotation, true, false);
+    swerve.drive(swerveTranslation, swerveRotation, false, true);
   }
 
   @Override

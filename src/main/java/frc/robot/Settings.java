@@ -7,16 +7,16 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 public class Settings{
     public static final class SwerveConstants {
         /* Angle Motor PID Values */
-        public static final double angleKP = 0.03;
+        public static final double angleKP = 0.025;
         public static final double angleKI = 0.0;
-        public static final double angleKD = 0.0;
+        public static final double angleKD = 0.005;
         public static final double angleKF = 0.0;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.00005;
+        public static final double driveKP = 0.1;
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
-        public static final double driveKF = 0.0;
+        public static final double driveKF = 2.96;
 
     /* Drive Motor Characterization Values */
     public static final double driveKS = (0.32 / 12);
@@ -35,7 +35,7 @@ public class Settings{
     public static double wheelCircumference = 0.31919;
     public static double driveGearRatio = 6.75;
 
-    public static double angleGearRatio = 6.75;
+    public static double angleGearRatio = 150/7;
 
 
     public static double driveVelocityConversion = driveGearRatio * wheelCircumference;
