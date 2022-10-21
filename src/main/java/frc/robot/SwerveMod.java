@@ -76,7 +76,7 @@ public class SwerveMod{
         //TripleHelixCode
         angleEncoder = new CANCoder(cancoderID);
         angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        angleEncoder.setPosition(0);    
+        // angleEncoder.setPosition(0);    
 
         
 
@@ -147,7 +147,7 @@ public class SwerveMod{
         return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
     }
 
-    public Rotation2d adjustedAngle = new Rotation2d();
+    
 
     //TripleHelix 
     public void setDesiredState(SwerveModuleState state) {
@@ -167,18 +167,21 @@ public class SwerveMod{
 
         adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
 
-        // anglePID.setReference(
-        //     adjustedAngle.getDegrees(),
-        //     ControlType.kPosition
-        // );        
+        anglePID.setReference(
+            adjustedAngle.getDegrees(),
+            ControlType.kPosition
+        );        
 
-        // drivePID.setReference(driveOutput, ControlType.kVelocity, 0, 2.96 * driveOutput);
+        drivePID.setReference(driveOutput, ControlType.kVelocity, 0, 2.96 * driveOutput);
         System.out.println(moduleNumber + "absolute " + angleEncoder.getAbsolutePosition());
         System.out.println(moduleNumber + "relative " + m_turningEncoder.getPosition());
+
     }
 
     public void syncEncoders(){
-        m_turningEncoder.setPosition(angleEncoder.getAbsolutePosition() - angleOffset);
+        // m_turningEncoder.setPosition((angleEncoder.getAbsolutePosition() - angleOffset)*(374.599/189.668));
+        // System.out.println(angleEncoder.getAbsolutePosition());
+        m_turningEncoder.setPosition(angleEncoder.getAbsolutePosition());
         
     }
 
@@ -210,5 +213,7 @@ public class SwerveMod{
         // // Rotation2d angle = Rotation2d.fromDegrees(Conversions.neoToDegrees(angleMotor.getSelectedSensorPosition(), Constants.SwerveConstants.angleGearRatio));
         // // return new SwerveModuleState(velocity, angle);
     }
+
+    public Rotation2d adjustedAngle = new Rotation2d();     
 
 }

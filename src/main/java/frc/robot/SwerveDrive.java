@@ -105,12 +105,12 @@ public class SwerveDrive{
         //     }
         // }
         SwerveModuleState[] swerveModuleStates = null;
-        if (mLocked) {
+        if (true) {
             swerveModuleStates = new SwerveModuleState[]{
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(135)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-135))
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0))
             };
         } else {
             swerveModuleStates =
