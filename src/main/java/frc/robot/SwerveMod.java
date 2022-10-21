@@ -32,7 +32,7 @@ public class SwerveMod{
     private SparkMaxPIDController drivePID;
 
     private RelativeEncoder m_driveEncoder;
-    private RelativeEncoder m_turningEncoder;
+    private RelativeEncoder m_turningEncoder;     
 
     private double lastAngle;
 
@@ -50,6 +50,8 @@ public class SwerveMod{
         this.moduleNumber = moduleNumber;
         this.angleOffset = angleOffset;
 
+        // angleEncoder = new CANCoder(turningCANCoderChannel);
+
         // Angle Motor
         angleMotor = new CANSparkMax(angleMotorID, MotorType.kBrushless);
         angleMotor.setInverted(Settings.SwerveConstants.angleMotorInvert);
@@ -62,19 +64,21 @@ public class SwerveMod{
 
         // Angle Encoder
         // angleEncoder.setPositionConversionFactor(360.0 / 12.8);
-        angleEncoder = new CANCoder(cancoderID);
-        angleEncoder.configFactoryDefault();
-        CANCoderConfiguration config = new CANCoderConfiguration();
-        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        // angleEncoder = new CANCoder(cancoderID);
+        // angleEncoder.configFactoryDefault();
+        // CANCoderConfiguration config = new CANCoderConfiguration();
+        // config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
         // config.sensorDirection = Settings.SwerveConstants.canCoderInvert;
         // config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
         // config.sensorTimeBase = SensorTimeBase.PerSecond;
         // angleEncoder.configAllSettings(config);     
 
         //TripleHelixCode
-        // m_turningCANCoder = new CANCoder(turningCANCoderChannel);
-        // m_turningCANCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        // m_turningCANCoder.setPosition(0);    
+        angleEncoder = new CANCoder(cancoderID);
+        angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        angleEncoder.setPosition(0);    
+
+        
 
         //Relative Encoders
         m_driveEncoder = driveMotor.getEncoder();
@@ -109,7 +113,7 @@ public class SwerveMod{
         drivePID.setD(drivekD);
 
         lastAngle = getState().angle.getDegrees();
-        resetToAbsolute();
+        // resetToAbsolute();
 
     //a
     }
@@ -119,58 +123,75 @@ public class SwerveMod{
     //     return config;
     // }
 
-    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
-        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-        if(isOpenLoop){
-            double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
-            driveMotor.set(percentOutput);
-        }else{
-            double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
-            drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
-        }
-
-        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
-        anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
-        lastAngle = angle;
-        System.out.print(moduleNumber + ": ");
-        System.out.println(getCanCoder().getDegrees());
-        
-        // System.out.println(angle);
-    }
-
-    //TripleHelix 
-    // public void setDesiredState(SwerveModuleState state) {
-
-    //     Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
-
-    //     double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
-    //     // return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
-
-    //     // Calculate the drive motor output from the drive PID controller.
-    //     double driveOutput = state.speedMetersPerSecond;
-
-    //     if (Math.abs(delta) > 90) {
-    //         driveOutput *= -1;
-    //         delta -= Math.signum(delta) * 180;
+    // public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
+    //     desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+    //     if(isOpenLoop){
+    //         double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
+    //         driveMotor.set(percentOutput);
+    //     }else{
+    //         double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
+    //         drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
     //     }
 
-    //     adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
-
-    //     m_turningController.setReference(
-    //         adjustedAngle.getDegrees(),
-    //         ControlType.kPosition
-    //     );        
-
-    //     SmartDashboard.putNumber("Commanded Velocity", driveOutput);
-
-    //     m_driveController.setReference(driveOutput, ControlType.kVelocity, 0, Constants.ModuleConstants.kDriveFF * driveOutput);
+    //     double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
+    //     anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
+    //     lastAngle = angle;
+    //     System.out.print(moduleNumber + ": ");
+    //     System.out.println(getCanCoder().getDegrees());
+        
+    //     // System.out.println(angle);
     // }
 
+      public double deltaAdjustedAngle(double targetAngle, double currentAngle) {
+
+        return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
+    }
+
+    public Rotation2d adjustedAngle = new Rotation2d();
+
+    //TripleHelix 
+    public void setDesiredState(SwerveModuleState state) {
+
+        Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
+
+        double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
+        // return ((targetAngle - currentAngle + 180) % 360 + 360) % 360 - 180;
+
+        // Calculate the drive motor output from the drive PID controller.
+        double driveOutput = state.speedMetersPerSecond;
+
+        if (Math.abs(delta) > 90) {
+            driveOutput *= -1;
+            delta -= Math.signum(delta) * 180;
+        }
+
+        adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
+
+        // anglePID.setReference(
+        //     adjustedAngle.getDegrees(),
+        //     ControlType.kPosition
+        // );        
+
+        // drivePID.setReference(driveOutput, ControlType.kVelocity, 0, 2.96 * driveOutput);
+        System.out.println(moduleNumber + "absolute " + angleEncoder.getAbsolutePosition());
+        System.out.println(moduleNumber + "relative " + m_turningEncoder.getPosition());
+    }
+
+    public void syncEncoders(){
+        m_turningEncoder.setPosition(angleEncoder.getAbsolutePosition() - angleOffset);
+        
+    }
 
     public void resetToAbsolute(){
-        double absolutePosition = Conversions.degreesToNeo(getCanCoder().getDegrees() - angleOffset, Settings.SwerveConstants.angleGearRatio);
-        // System.out.println(absolutePosition);
-        angleEncoder.setPosition(absolutePosition);
+        // Reset the cumulative rotation counts of the SparkMax motors
+        m_turningEncoder.setPosition(0.0);
+
+        angleEncoder.setPosition(0.0);
+        angleEncoder.configMagnetOffset(angleEncoder.configGetMagnetOffset() - angleEncoder.getAbsolutePosition());
+
+        
+    
+        
     }
     public Rotation2d getCanCoder(){
         return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());

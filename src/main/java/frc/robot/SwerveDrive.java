@@ -34,7 +34,7 @@ public class SwerveDrive{
     // public boolean isSnapping;
 
     // public ProfiledPIDController snapPIDController;
-
+    
     
     // Private boolean to lock Swerve wheels
     private boolean mLocked = false;
@@ -60,9 +60,9 @@ public class SwerveDrive{
         zeroGyro();
 
         SwerveMods = new SwerveMod[] {
-            new SwerveMod(0, 4, 8, 9, 0),
+            new SwerveMod(0, 4, 8, 9, -90),
             new SwerveMod(1, 1, 5, 12, 0),
-            new SwerveMod(2, 3, 2, 11, 0),
+            new SwerveMod(2, 3, 2, 11, -45),
             new SwerveMod(3, 6, 7, 10, 0),
         };
     }
@@ -108,9 +108,9 @@ public class SwerveDrive{
         if (mLocked) {
             swerveModuleStates = new SwerveModuleState[]{
                 new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(90)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(315)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(90))
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(135)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-135))
             };
         } else {
             swerveModuleStates =
@@ -130,7 +130,7 @@ public class SwerveDrive{
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Settings.SwerveConstants.maxSpeed);
 
         for (SwerveMod mod : SwerveMods) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber]);
         }
     }
 
@@ -188,6 +188,7 @@ public class SwerveDrive{
     public void resetAnglesToAbsolute() {
         for (SwerveMod mod : SwerveMods) {
             mod.resetToAbsolute();
+            mod.syncEncoders();
         }
     }
 

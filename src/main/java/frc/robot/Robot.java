@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Translation2d swerveTranslation = new Translation2d(controlBoard.getSwerveTranslation().getX(), controlBoard.getSwerveTranslation().getY());
-    System.out.println(swerveTranslation);
+    // System.out.println(swerveTranslation);
     // System.out.println(swerveTranslation.getX());
     // System.out.println(swerveTranslation.getY());
     // Translation2d swerveTranslation = new Translation2d(1, 0);
