@@ -60,10 +60,10 @@ public class SwerveDrive{
         zeroGyro();
 
         SwerveMods = new SwerveMod[] {
-            new SwerveMod(0, 4, 8, 9, -90),
-            new SwerveMod(1, 1, 5, 12, 0),
-            new SwerveMod(2, 3, 2, 11, -45),
-            new SwerveMod(3, 6, 7, 10, 0),
+            new SwerveMod(0, 4, 8, 9, 257),
+            new SwerveMod(1, 1, 5, 12, 120),
+            new SwerveMod(2, 3, 2, 11, 32),
+            new SwerveMod(3, 6, 7, 10, 45),
         };
     }
 
@@ -105,7 +105,7 @@ public class SwerveDrive{
         //     }
         // }
         SwerveModuleState[] swerveModuleStates = null;
-        if (true) {
+        if (mLocked) {
             swerveModuleStates = new SwerveModuleState[]{
                 new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
                 new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
@@ -113,17 +113,18 @@ public class SwerveDrive{
                 new SwerveModuleState(0.1, Rotation2d.fromDegrees(0))
             };
         } else {
+            System.out.println(ahrs.getYaw());
             swerveModuleStates =
                 Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                     fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                         translation.getX(), 
                                         translation.getY(), 
                                         rotation, 
-                                        new Rotation2d(ahrs.getYaw())
+                                        Rotation2d.fromDegrees(ahrs.getYaw())
                                     )
                                     : new ChassisSpeeds(
                                         translation.getX(), 
-                                        translation.getY(), 
+                                        translation.getY(),
                                         rotation)
                                     );
         }
@@ -131,8 +132,28 @@ public class SwerveDrive{
 
         for (SwerveMod mod : SwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber]);
+            // mod.setDesiredState(new SwerveModuleState(0, mod.getState().angle));
         }
     }
+
+
+//     public void zeroHeading() {
+//     m_ahrs.zeroYaw();
+//     offset = 0;
+//     m_targetPose = new Pose2d(new Translation2d(), new Rotation2d());
+//     }
+
+//      public Rotation2d getHeading() {
+//     float raw_yaw = m_ahrs.getYaw() - (float)offset; // Returns yaw as -180 to +180.
+//     // float raw_yaw = m_ahrs.getYaw(); // Returns yaw as -180 to +180.
+//     float calc_yaw = raw_yaw;
+
+//     if (0.0 > raw_yaw ) { // yaw is negativez
+//       calc_yaw += 360.0;
+//     }
+//     return Rotation2d.fromDegrees(-calc_yaw);
+//   }
+// }
 
 
     // public double calculateSnapValue() {
@@ -187,7 +208,7 @@ public class SwerveDrive{
 
     public void resetAnglesToAbsolute() {
         for (SwerveMod mod : SwerveMods) {
-            mod.resetToAbsolute();
+            // mod.resetToAbsolute();
             mod.syncEncoders();
         }
     }

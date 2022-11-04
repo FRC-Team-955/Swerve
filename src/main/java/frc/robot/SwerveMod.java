@@ -23,7 +23,7 @@ public class SwerveMod{
 
     public double angleOffset;
 
-            private CANSparkMax angleMotor;
+    private CANSparkMax angleMotor;
     private CANCoder angleEncoder;
     private SparkMaxPIDController anglePID;
 
@@ -75,7 +75,13 @@ public class SwerveMod{
 
         //TripleHelixCode
         angleEncoder = new CANCoder(cancoderID);
-        angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        CANCoderConfiguration config = new CANCoderConfiguration();
+        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        config.sensorDirection = Settings.SwerveConstants.canCoderInvert;
+        // config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+        // config.sensorTimeBase = SensorTimeBase.PerSecond;
+        angleEncoder.configAllSettings(config);     
         // angleEncoder.setPosition(0);    
 
         
@@ -84,7 +90,7 @@ public class SwerveMod{
         m_driveEncoder = driveMotor.getEncoder();
         m_turningEncoder = angleMotor.getEncoder();
 
-        m_turningEncoder.setPositionConversionFactor(360.0 / 12.8);   
+        m_turningEncoder.setPositionConversionFactor(16.845);   //360.0 / 12.8
 
          // m_driveEncoder returns RPM by default. Use setVelocityConversionFactor() to
         // convert that to meters per second.
@@ -160,6 +166,14 @@ public class SwerveMod{
         // Calculate the drive motor output from the drive PID controller.
         double driveOutput = state.speedMetersPerSecond;
 
+        // if(this.moduleNumber == 0){
+        //     driveOutput = -1;
+        // }
+
+        // if(this.moduleNumber == 0){
+        //     SwerveDrive.turningdrive(swerveTranslation, swerveRotation, false, true);
+        // }
+
         if (Math.abs(delta) > 90) {
             driveOutput *= -1;
             delta -= Math.signum(delta) * 180;
@@ -173,15 +187,15 @@ public class SwerveMod{
         );        
 
         drivePID.setReference(driveOutput, ControlType.kVelocity, 0, 2.96 * driveOutput);
-        System.out.println(moduleNumber + "absolute " + angleEncoder.getAbsolutePosition());
-        System.out.println(moduleNumber + "relative " + m_turningEncoder.getPosition());
+        // System.out.println(moduleNumber + "absolute " + angleEncoder.getAbsolutePosition());
+        // System.out.println(moduleNumber + "relative " + m_turningEncoder.getPosition());
 
     }
 
     public void syncEncoders(){
-        // m_turningEncoder.setPosition((angleEncoder.getAbsolutePosition() - angleOffset)*(374.599/189.668));
+        // m_turningEncoder.setPosition((angleEncoder.getAbsolutePosition() - angleOffset)*(374.599/189.668) - 45);
         // System.out.println(angleEncoder.getAbsolutePosition());
-        m_turningEncoder.setPosition(angleEncoder.getAbsolutePosition());
+        m_turningEncoder.setPosition(angleEncoder.getAbsolutePosition()-angleOffset);
         
     }
 
@@ -190,7 +204,7 @@ public class SwerveMod{
         m_turningEncoder.setPosition(0.0);
 
         angleEncoder.setPosition(0.0);
-        angleEncoder.configMagnetOffset(angleEncoder.configGetMagnetOffset() - angleEncoder.getAbsolutePosition());
+        // angleEncoder.configMagnetOffset(angleEncoder.configGetMagnetOffset() - angleEncoder.getAbsolutePosition());
 
         
     

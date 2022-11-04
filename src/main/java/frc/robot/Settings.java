@@ -23,7 +23,7 @@ public class Settings{
     public static final double driveKV = (1.51 / 12);
     public static final double driveKA = (0.27 / 12);
 
-    public static  boolean canCoderInvert = false;
+    public static  boolean canCoderInvert = true;
     public static double maxSpeed = 4.5;
     public static double maxAngularVelocity = 10.0;
 
@@ -44,8 +44,8 @@ public class Settings{
     
 
     public static final edu.wpi.first.math.geometry.Translation2d[] swerveModuleLocations = {
-        new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, trackWidth / 2.0),
         new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, -trackWidth / 2.0),
+        new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, trackWidth / 2.0),
         new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, trackWidth / 2.0),
         new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, -trackWidth / 2.0)
     };
@@ -54,4 +54,4 @@ public class Settings{
 
     }
 
-}
+}   
