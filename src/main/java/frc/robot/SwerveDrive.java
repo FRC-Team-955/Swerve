@@ -25,7 +25,7 @@ public class SwerveDrive{
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
     public double headingSetPoint;
-    private PIDController controller = new PIDController(1,0,0);
+    private PIDController controller = new PIDController(0.7,0,0);
 
 
 
@@ -102,7 +102,17 @@ public class SwerveDrive{
     
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        headingSetPoint += rotation * 0.08;
+        headingSetPoint += rotation * 0.24;
+        // if(headingSetPoint > 179){
+        //     headingSetPoint -= 360;
+        // }
+        // if(headingSetPoint < -179){
+        //     headingSetPoint += 360;
+        // }
+        // System.out.println("heading " + headingSetPoint);
+        // System.out.println("Navx " + ahrs.getAngle());
+        SmartDashboard.getNumber("Heading Set Point", headingSetPoint);
+        SmartDashboard.getNumber("Navx", ahrs.getAngle());
         // if (isSnapping) {
         //     if (Math.abs(rotation) == 0.0) {
         //         maybeStopSnap(false);
@@ -127,7 +137,7 @@ public class SwerveDrive{
                     fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                         translation.getX(), 
                                         translation.getY(), 
-                                        controller.calculate(ahrs.getYaw(), headingSetPoint), 
+                                        controller.calculate(ahrs.getAngle(), headingSetPoint), 
                                         Rotation2d.fromDegrees(ahrs.getYaw())
                                     )
                                     : new ChassisSpeeds(
