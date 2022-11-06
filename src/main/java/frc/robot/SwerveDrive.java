@@ -24,6 +24,10 @@ public class SwerveDrive{
 
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
+    public double headingSetPoint;
+    private PIDController controller = new PIDController(1,0,0);
+
+
 
 
     AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -58,12 +62,12 @@ public class SwerveDrive{
         // snapPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         zeroGyro();
-
         SwerveMods = new SwerveMod[] {
-            new SwerveMod(0, 4, 8, 9, 257),
-            new SwerveMod(1, 1, 5, 12, 120),
-            new SwerveMod(2, 3, 2, 11, 32),
-            new SwerveMod(3, 6, 7, 10, 45),
+            //MODULE 0 AND 3 MIGHT BE SLIGHTLY OFF
+            new SwerveMod(0, 4, 8, 9, 254.3 - 1.23 + 2.813),
+            new SwerveMod(1, 1, 5, 12, 121.4 - 0.88),
+            new SwerveMod(2, 3, 2, 11, 33.8 + 0.09),
+            new SwerveMod(3, 6, 7, 10, 44.5  + 2.37 - 5.274),
         };
     }
 
@@ -95,7 +99,10 @@ public class SwerveDrive{
     //     drive(translation2d, angleAdjustment, fieldRelative, false);
     // }
 
+    
+
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        headingSetPoint += rotation * 0.08;
         // if (isSnapping) {
         //     if (Math.abs(rotation) == 0.0) {
         //         maybeStopSnap(false);
@@ -104,22 +111,23 @@ public class SwerveDrive{
         //         maybeStopSnap(true);
         //     }
         // }
+       
         SwerveModuleState[] swerveModuleStates = null;
         if (mLocked) {
             swerveModuleStates = new SwerveModuleState[]{
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0))
+                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0, Rotation2d.fromDegrees(0))
             };
         } else {
-            System.out.println(ahrs.getYaw());
+            System.out.println(headingSetPoint);
             swerveModuleStates =
                 Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                     fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                         translation.getX(), 
                                         translation.getY(), 
-                                        rotation, 
+                                        controller.calculate(ahrs.getYaw(), headingSetPoint), 
                                         Rotation2d.fromDegrees(ahrs.getYaw())
                                     )
                                     : new ChassisSpeeds(
