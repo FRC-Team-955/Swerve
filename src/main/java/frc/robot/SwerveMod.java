@@ -60,18 +60,7 @@ public class SwerveMod{
          // Drive Motor
          driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
          driveMotor.setInverted(Settings.SwerveConstants.driveMotorInvert);
-         driveMotor.setIdleMode(Settings.SwerveConstants.driveIdleMode);
-
-        // Angle Encoder
-        // angleEncoder.setPositionConversionFactor(360.0 / 12.8);
-        // angleEncoder = new CANCoder(cancoderID);
-        // angleEncoder.configFactoryDefault();
-        // CANCoderConfiguration config = new CANCoderConfiguration();
-        // config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        // config.sensorDirection = Settings.SwerveConstants.canCoderInvert;
-        // config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        // config.sensorTimeBase = SensorTimeBase.PerSecond;
-        // angleEncoder.configAllSettings(config);     
+         driveMotor.setIdleMode(Settings.SwerveConstants.driveIdleMode);   
 
         //TripleHelixCode
         angleEncoder = new CANCoder(cancoderID);
@@ -191,6 +180,32 @@ public class SwerveMod{
         // .println(moduleNumber + "relative " + m_turningEncoder.getPosition());
 
     }
+    
+    public void setOpenLoopState(SwerveModuleState state) {
+        Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
+
+        double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
+
+        // Calculate the drive motor output from the drive PID controller.
+        double driveOutput = state.speedMetersPerSecond;
+
+        if (Math.abs(delta) > 90) {
+            driveOutput *= -1;
+            delta -= Math.signum(delta) * 180;
+        }
+
+        adjustedAngle = Rotation2d.fromDegrees(delta + curAngle.getDegrees());
+
+        anglePID.setReference(
+            adjustedAngle.getDegrees(),
+            ControlType.kPosition
+        );        
+
+        // SmartDashboard.putNumber("Commanded Velocity", driveOutput);
+
+        driveMotor.setVoltage(2.96 * driveOutput);
+    }
+
 
     public void syncEncoders(){
         // m_turningEncoder.setPosition((angleEncoder.getAbsolutePosition() - angleOffset)*(374.599/189.668) - 45);
