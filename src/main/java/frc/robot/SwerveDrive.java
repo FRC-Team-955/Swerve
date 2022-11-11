@@ -53,7 +53,7 @@ public class SwerveDrive{
     }
 
     public SwerveDrive() {        
-        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, new Rotation2d(ahrs.getYaw()));
+        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(ahrs.getYaw()));
         
         // snapPIDController = new ProfiledPIDController(Constants.SnapConstants.kP,
         //                                               Constants.SnapConstants.kI, 
@@ -70,6 +70,9 @@ public class SwerveDrive{
             new SwerveMod(3, 6, 7, 10, 44.5  + 2.37 - 5.274),
         };
     }
+
+    // system.out.println("X " + swerveOdometry.getX);
+    // system.out.println("Y " + swerveOdometry.getY);
 
     // @Override
     // public void registerEnabledLoops(ILooper mEnabledLooper) {
@@ -111,8 +114,10 @@ public class SwerveDrive{
         // }
         // System.out.println("heading " + headingSetPoint);
         // System.out.println("Navx " + ahrs.getAngle());
-        SmartDashboard.getNumber("Heading Set Point", headingSetPoint);
-        SmartDashboard.getNumber("Navx", ahrs.getAngle());
+        // SmartDashboard.getNumber("Heading Set Point", headingSetPoint);
+        // SmartDashboard.getNumber("Navx", ahrs.getAngle());
+        System.out.println("X " + swerveOdometry.getPoseMeters().getX());
+        System.out.println("Y " + swerveOdometry.getPoseMeters().getY());
         // if (isSnapping) {
         //     if (Math.abs(rotation) == 0.0) {
         //         maybeStopSnap(false);
@@ -131,7 +136,6 @@ public class SwerveDrive{
                 new SwerveModuleState(0, Rotation2d.fromDegrees(0))
             };
         } else {
-            System.out.println(headingSetPoint);
             swerveModuleStates =
                 Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                     fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -216,13 +220,12 @@ public class SwerveDrive{
         return swerveOdometry.getPoseMeters();
     }
 
-    // public void resetOdometry(Pose2d pose) {
-    //     swerveOdometry.resetPosition(pose, pose.getRotation());
-    //     zeroGyro(pose.getRotation().getDegrees());
+    public void resetOdometry(Pose2d pose) {
+        swerveOdometry.resetPosition(pose, Rotation2d.fromDegrees(headingSetPoint));
+        // zeroGyro(pose.getRotation().getDegrees());
 
-    //     // reset field to vehicle
-    //     RobotState.getInstance().reset(new com.team254.lib.geometry.Pose2d(pose));
-    // }
+
+    }
 
     public void resetAnglesToAbsolute() {
         for (SwerveMod mod : SwerveMods) {
@@ -231,15 +234,15 @@ public class SwerveDrive{
         }
     }
 
-    // public SwerveModuleState[] getStates() {
-    //     SwerveModuleState[] states = new SwerveModuleState[4];
-    //     for(SwerveMod mod : SwerveMods){
-    //         states[mod.moduleNumber] = mod.getState();
-    //         SmartDashboard.putNumber("mod " + mod.moduleNumber + " current speed", states[mod.moduleNumber].speedMetersPerSecond);
-    //         SmartDashboard.putNumber("mod " + mod.moduleNumber + " current angle", MathUtil.inputModulus(states[mod.moduleNumber].angle.getDegrees(), 0, 180));
-    //     }
-    //     return states;
-    // }
+    public SwerveModuleState[] getStates() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for(SwerveMod mod : SwerveMods){
+            states[mod.moduleNumber] = mod.getState();
+            SmartDashboard.putNumber("mod " + mod.moduleNumber + " current speed", states[mod.moduleNumber].speedMetersPerSecond);
+            SmartDashboard.putNumber("mod " + mod.moduleNumber + " current angle", MathUtil.inputModulus(states[mod.moduleNumber].angle.getDegrees(), 0, 180));
+        }
+        return states;
+    }
 
     // public void setAnglePIDValues(double kP, double kI, double kD) {
     //     for (SwerveModule swerveModule : mSwerveMods) {
@@ -265,16 +268,16 @@ public class SwerveDrive{
         ahrs.reset();
     }
 
-    // public void updateSwerveOdometry(){
-    //     swerveOdometry.update(mPigeon.getYaw().getWPIRotation2d(), getStates());
+    public void updateSwerveOdometry(){
+        swerveOdometry.update(Rotation2d.fromDegrees(ahrs.getYaw()), getStates());
 
-    //     chassisVelocity = Constants.SwerveConstants.swerveKinematics.toChassisSpeeds(
-    //                 mInstance.mSwerveMods[0].getState(),
-    //                 mInstance.mSwerveMods[1].getState(),
-    //                 mInstance.mSwerveMods[2].getState(),
-    //                 mInstance.mSwerveMods[3].getState()
-    //         );
-    // }
+        chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(
+                    SwerveMods[0].getState(),
+                    SwerveMods[1].getState(),
+                    SwerveMods[2].getState(),
+                    SwerveMods[3].getState()
+            );
+    }
 
     // @Override
     // public void stop() {

@@ -18,6 +18,7 @@ public class ControlBoard {
     public double norm(Translation2d tAxes) {
         return Math.hypot(tAxes.getX(), tAxes.getY());
     }
+    //6.62/6.71
 
 
     public double getSwerveRotation() {

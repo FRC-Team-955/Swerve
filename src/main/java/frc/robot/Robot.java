@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -43,6 +45,7 @@ public class Robot extends TimedRobot {
   swerve = new SwerveDrive();
   controlBoard = new ControlBoard();
   swerve.resetAnglesToAbsolute();
+  swerve.resetOdometry(new Pose2d(0,0, new Rotation2d(0)));
   
   }
 
@@ -55,6 +58,7 @@ public class Robot extends TimedRobot {
     // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
     swerve.drive(swerveTranslation, swerveRotation, true, true);
+    swerve.updateSwerveOdometry();
   }
 
   @Override
