@@ -1,4 +1,7 @@
 package frc.robot;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.SPI;
@@ -9,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +20,11 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveDrive{
 
@@ -25,9 +34,12 @@ public class SwerveDrive{
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
     public double headingSetPoint;
-    private PIDController controller = new PIDController(0.7,0,0);
-
-
+    private PIDController xController = new PIDController(0.7,0,0);
+    private PIDController yController = new PIDController(0.7,0,0);
+    private ProfiledPIDController thetaController = new ProfiledPIDController(0.7,0,0, new TrapezoidProfile.Constraints(4.4, 5));
+    public HolonomicDriveController autoController = new HolonomicDriveController(xController, yController, thetaController);
+    public Trajectory trajectory = new Trajectory();
+    public Timer timer = new Timer();
 
 
     AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -117,7 +129,7 @@ public class SwerveDrive{
         // SmartDashboard.getNumber("Heading Set Point", headingSetPoint);
         // SmartDashboard.getNumber("Navx", ahrs.getAngle());
         System.out.println("X " + swerveOdometry.getPoseMeters().getX());
-        System.out.println("Y " + swerveOdometry.getPoseMeters().getY());
+        System.out.println("Y " + swerveOdometry.getPoseMeters().getY()*(6.4/6.3));
         // if (isSnapping) {
         //     if (Math.abs(rotation) == 0.0) {
         //         maybeStopSnap(false);
@@ -231,6 +243,7 @@ public class SwerveDrive{
         for (SwerveMod mod : SwerveMods) {
             // mod.resetToAbsolute();
             mod.syncEncoders();
+            mod.resetDrive();
         }
     }
 
@@ -289,4 +302,34 @@ public class SwerveDrive{
     //     return true;
     // }
 
+    public void LoadTrajectory(String name){
+
+        timer.reset();
+        timer.start();
+
+        String trajectoryJSON = "paths/New Path.wpilib.json";
+
+        try {
+            Path deployDirectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+            trajectory = TrajectoryUtil.fromPathweaverJson(deployDirectory);
+         } catch (IOException ex) {
+            DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+         }
+
+        ahrs.setAngleAdjustment(trajectory.getInitialPose().getRotation().getDegrees());
+        swerveOdometry.resetPosition(trajectory.getInitialPose(), ahrs.getRotation2d());
+    }
+
+    public boolean followTrajectory(){
+        updateSwerveOdometry();
+        Trajectory.State goal = trajectory.sample(timer.get());
+        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal);
+
+        
+    }
+
+
+
+
 }
+

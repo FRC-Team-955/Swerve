@@ -28,7 +28,6 @@ public class SwerveMod{
     private SparkMaxPIDController anglePID;
 
     private CANSparkMax driveMotor;
-    private RelativeEncoder driveEncoder;
     private SparkMaxPIDController drivePID;
 
     private RelativeEncoder m_driveEncoder;
@@ -95,8 +94,8 @@ public class SwerveMod{
         anglePID.setD(Settings.SwerveConstants.angleKD);
 
         // Drive Encoder
-        driveEncoder = driveMotor.getAlternateEncoder(42);
-        driveEncoder = driveMotor.getEncoder();
+        m_driveEncoder = driveMotor.getAlternateEncoder(42);
+        m_driveEncoder = driveMotor.getEncoder();
         
 
         // driveEncoder.setVelocityConversionFactor(Settings.SwerveConstants.driveVelocityConversion);
@@ -225,6 +224,10 @@ public class SwerveMod{
     
         
     }
+    public void resetDrive(){
+        m_driveEncoder.setPosition(0.0);
+    }
+
     public Rotation2d getCanCoder(){
         return Rotation2d.fromDegrees(angleEncoder.getAbsolutePosition());
     }
