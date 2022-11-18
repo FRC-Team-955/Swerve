@@ -25,7 +25,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
+    swerve = new SwerveDrive();
+    controlBoard = new ControlBoard();
+    swerve.resetAnglesToAbsolute();
+    swerve.resetOdometry(new Pose2d(0,0, new Rotation2d(0)));
   }
 
   @Override
@@ -34,18 +37,34 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousInit() {}
-
+  public void autonomousInit() {
+    
+  }
+  int autoState = 0;
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    if (true){
+      if(autoState ==0){
+        System.out.println("autostate0");
+        swerve.loadTrajectory("New Path.wpilib.json");
+        autoState++;
+      }
+      if(autoState ==1){
+        System.out.println("autostate1");
+        if(swerve.followTrajectory()){
+          autoState++;
+        }
+      }
+      if(autoState ==2){
+        System.out.println("autostate2");
+      }
+    }
+  }
 
   @Override
   public void teleopInit() {
     
-  swerve = new SwerveDrive();
-  controlBoard = new ControlBoard();
-  swerve.resetAnglesToAbsolute();
-  swerve.resetOdometry(new Pose2d(0,0, new Rotation2d(0)));
+
   
   }
 

@@ -34,6 +34,8 @@ public class SwerveDrive{
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
     public double headingSetPoint;
+    private PIDController controller = new PIDController(0.7,0,0);
+
     private PIDController xController = new PIDController(0.7,0,0);
     private PIDController yController = new PIDController(0.7,0,0);
     private ProfiledPIDController thetaController = new ProfiledPIDController(0.7,0,0, new TrapezoidProfile.Constraints(4.4, 5));
@@ -266,12 +268,6 @@ public class SwerveDrive{
     // public double[] getAnglePIDValues(int index) {
     //     return mSwerveMods[index].getAnglePIDValues();
     // }
-
-
-    // @Override
-    // public void zeroSensors(){
-    //     zeroGyro(0.0);
-    // }
     
     public void zeroGyro(){
         zeroGyro(0.0);
@@ -292,22 +288,8 @@ public class SwerveDrive{
             );
     }
 
-    // @Override
-    // public void stop() {
-    //     mIsEnabled = false;
-    // }
-
-    // @Override
-    // public boolean checkSystem() {
-    //     return true;
-    // }
-
-    public void LoadTrajectory(String name){
-
-        timer.reset();
-        timer.start();
-
-        String trajectoryJSON = "paths/New Path.wpilib.json";
+    public void loadTrajectory(String name){
+        String trajectoryJSON = "pathplanner/generatedJSON/" + name;
 
         try {
             Path deployDirectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
@@ -318,14 +300,28 @@ public class SwerveDrive{
 
         ahrs.setAngleAdjustment(trajectory.getInitialPose().getRotation().getDegrees());
         swerveOdometry.resetPosition(trajectory.getInitialPose(), ahrs.getRotation2d());
+        timer.reset();
+        timer.start();
     }
 
     public boolean followTrajectory(){
         updateSwerveOdometry();
         Trajectory.State goal = trajectory.sample(timer.get());
-        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal);
-
         
+        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(0.0));
+        
+        SwerveModuleState[] swerveModuleStates = Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(adjustedSpeeds);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Settings.SwerveConstants.maxSpeed);
+
+        for (SwerveMod mod : SwerveMods) {
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber]);
+        }
+        System.out.println(timer.get());
+        if (timer.get() > trajectory.getTotalTimeSeconds()){
+            return true;
+        }
+        return false;
     }
 
 
