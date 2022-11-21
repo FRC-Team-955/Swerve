@@ -19,6 +19,8 @@ public class Robot extends TimedRobot {
 
   private SwerveDrive swerve;
   private ControlBoard controlBoard;
+  int autoState = 0;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,15 +40,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    
+    autoState = 0;
   }
-  int autoState = 0;
   @Override
   public void autonomousPeriodic() {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("New Path.wpilib.json");
+        swerve.loadTrajectory("YPath.wpilib.json");
         autoState++;
       }
       if(autoState ==1){
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
     // System.out.println(swerveTranslation.getY());
     // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
-    swerve.drive(swerveTranslation, swerveRotation, true, true);
+    swerve.drive(swerveTranslation, swerveRotation, false, true);
     swerve.updateSwerveOdometry();
   }
 

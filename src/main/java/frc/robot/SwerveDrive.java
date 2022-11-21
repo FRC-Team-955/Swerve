@@ -270,10 +270,6 @@ public class SwerveDrive{
     // }
     
     public void zeroGyro(){
-        zeroGyro(0.0);
-    }
-
-    public void zeroGyro(double reset){
         ahrs.reset();
     }
 
@@ -297,19 +293,28 @@ public class SwerveDrive{
          } catch (IOException ex) {
             DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
          }
-
-        ahrs.setAngleAdjustment(trajectory.getInitialPose().getRotation().getDegrees());
-        swerveOdometry.resetPosition(trajectory.getInitialPose(), ahrs.getRotation2d());
+        zeroGyro();
+        ahrs.setAngleAdjustment(0);
+        // ahrs.setAngleAdjustment(0);
+         //                                                       The robot fields angle (in pathweaver rotation)
+        swerveOdometry.resetPosition(trajectory.getInitialPose(), Rotation2d.fromDegrees(ahrs.getAngle()));
         timer.reset();
         timer.start();
     }
 
     public boolean followTrajectory(){
+     
         updateSwerveOdometry();
         Trajectory.State goal = trajectory.sample(timer.get());
-        
-        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(0.0));
-        
+        System.out.println("Get Yaw: " + ahrs.getYaw());
+        System.out.println("Get Angle: " + ahrs.getAngle());
+        //                                         Init Heading in pathweaver
+        System.out.println("Init \"Rotation\": " + trajectory.getInitialPose().getRotation());
+
+                    //                                                          rotation in Path Weaver
+        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(ahrs.getAngle()+90));
+        System.out.println("Y Vel: " + adjustedSpeeds.vyMetersPerSecond);
+        System.out.println("X Vel: " + adjustedSpeeds.vxMetersPerSecond);
         SwerveModuleState[] swerveModuleStates = Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(adjustedSpeeds);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Settings.SwerveConstants.maxSpeed);
