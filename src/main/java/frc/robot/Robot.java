@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("XPath.wpilib.json");
+        swerve.loadTrajectory("CorrectPath.wpilib.json");
         autoState++;
       }
       if(autoState ==1){

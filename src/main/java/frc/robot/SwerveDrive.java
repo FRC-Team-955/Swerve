@@ -41,7 +41,12 @@ public class SwerveDrive{
     private ProfiledPIDController thetaController = new ProfiledPIDController(0.7,0,0, new TrapezoidProfile.Constraints(4.4, 5));
     public HolonomicDriveController autoController = new HolonomicDriveController(xController, yController, thetaController);
     public Trajectory trajectory = new Trajectory();
+    public Trajectory turningTrajectory = new Trajectory();
     public Timer timer = new Timer();
+    public String File = "pathplanner/generatedJSON/CorrectPath.path"; 
+    public String Json;
+    public int array[] = {};   
+    // public Path deployDirectory = new Path();
 
 
     AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -285,13 +290,17 @@ public class SwerveDrive{
 
     public void loadTrajectory(String name){
         String trajectoryJSON = "pathplanner/generatedJSON/" + name;
-
+        Path deployDirectory;
         try {
-            Path deployDirectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+            deployDirectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
             trajectory = TrajectoryUtil.fromPathweaverJson(deployDirectory);
-         } catch (IOException ex) {
+        } catch (IOException ex) {
             DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-         }
+        }
+
+        Json = deployDirectory.toString();
+
+
         zeroGyro();
         ahrs.setAngleAdjustment(0);
         // ahrs.setAngleAdjustment(0);
@@ -323,7 +332,10 @@ public class SwerveDrive{
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber]);
         }
         System.out.println(timer.get());
-        if (timer.get() > trajectory.getTotalTimeSeconds()){
+        // if (timer.get() > trajectory.getTotalTimeSeconds()){
+        //     return true;
+        // }
+        if (timer.get() > 10){
             return true;
         }
         return false;
