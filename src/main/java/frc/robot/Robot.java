@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("YPath.wpilib.json");
+        swerve.loadTrajectory("XPath.wpilib.json");
         autoState++;
       }
       if(autoState ==1){
@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
       }
       if(autoState ==2){
         System.out.println("autostate2");
+        swerve.drive(new Translation2d(0,0), 0, false, true);
       }
     }
   }

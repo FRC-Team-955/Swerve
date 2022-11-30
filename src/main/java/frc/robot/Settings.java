@@ -24,7 +24,7 @@ public class Settings{
     public static final double driveKA = (0.27 / 12);
 
     public static  boolean canCoderInvert = true;
-    public static double maxSpeed = 4.5;
+    public static double maxSpeed = 2;
     public static double maxAngularVelocity = 10.0;
 
     public static boolean angleMotorInvert = false;

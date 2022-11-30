@@ -234,7 +234,7 @@ public class SwerveMod{
 
 
     public SwerveModuleState getState(){
-        double m2 = (m_turningEncoder.getPosition() % 360 + 360) % 360;
+        double m2 = -(m_turningEncoder.getPosition() % 360 + 360) % 360;
 
         return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m2 * Math.PI / 180));
         // // double velocity = Conversions.neoToMPS(driveEncoder.getVelocity(),Settings.SwerveConstants.driveGearRatio);
