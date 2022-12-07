@@ -40,8 +40,10 @@ public class SwerveDrive{
 
     private PIDController xController = new PIDController(0.7,0,0);
     private PIDController yController = new PIDController(0.7,0,0);
-    private ProfiledPIDController thetaController = new ProfiledPIDController(0.1,0,0, new TrapezoidProfile.Constraints(40, 180));
-    public HolonomicDriveController autoController = new HolonomicDriveController(xController, yController, thetaController);
+    // private PIDController thetaController = new PIDController(0.25,0.1,0);
+    private PIDController thetaController = new PIDController(0.05,0,0);
+    private ProfiledPIDController thetaController2 = new ProfiledPIDController(0.5,0,0, new TrapezoidProfile.Constraints(40, 180));
+    public HolonomicDriveController autoController = new HolonomicDriveController(xController, yController, thetaController2);
     public Trajectory trajectory = new Trajectory();
     public Trajectory turningTrajectory = new Trajectory();
     public Timer timer = new Timer();
@@ -342,6 +344,7 @@ public class SwerveDrive{
         System.out.println("X Vel: " + adjustedSpeeds.vxMetersPerSecond);
 
         // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getYaw(), 90);
+        // ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(0, 0, thetaController.calculate(ahrs.getYaw(), 90));
         ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getYaw(), 90));
 
         // SwerveModuleState[] swerveModuleStates =
@@ -368,7 +371,7 @@ public class SwerveDrive{
         // if (timer.get() > trajectory.getTotalTimeSeconds()){
         //     return true;
         // }
-        if (timer.get() > trajectory.getTotalTimeSeconds()){
+        if (timer.get() > 100){
             return true;
         }
         return false;

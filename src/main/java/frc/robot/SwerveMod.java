@@ -117,24 +117,24 @@ public class SwerveMod{
     //     return config;
     // }
 
-    // public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
-    //     desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-    //     if(isOpenLoop){
-    //         double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
-    //         driveMotor.set(percentOutput);
-    //     }else{
-    //         double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
-    //         drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
-    //     }
+    public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
+        desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+        if(isOpenLoop){
+            double percentOutput = desiredState.speedMetersPerSecond / Settings.SwerveConstants.maxSpeed;
+            driveMotor.set(percentOutput);
+        }else{
+            double velocity = Conversions.MPSToNeo(desiredState.speedMetersPerSecond, Settings.SwerveConstants.driveGearRatio);
+            drivePID.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(desiredState.speedMetersPerSecond));
+        }
 
-    //     double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
-    //     anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
-    //     lastAngle = angle;
-    //     System.out.print(moduleNumber + ": ");
-    //     System.out.println(getCanCoder().getDegrees());
+        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Settings.SwerveConstants.maxSpeed * 0.01)) ? lastAngle : desiredState.angle.getDegrees();
+        anglePID.setReference(Conversions.degreesToNeo(angle, Settings.SwerveConstants.angleGearRatio), ControlType.kPosition);
+        lastAngle = angle;
+        System.out.print(moduleNumber + ": ");
+        System.out.println(getCanCoder().getDegrees());
         
-    //     // System.out.println(angle);
-    // }
+        // System.out.println(angle);
+    }
 
       public double deltaAdjustedAngle(double targetAngle, double currentAngle) {
 
