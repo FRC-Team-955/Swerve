@@ -49,10 +49,10 @@ public class Settings{
         new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, trackWidth / 2.0),
         new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, -trackWidth / 2.0)
 
-        // new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, -trackWidth / 2.0),
         // new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, trackWidth / 2.0),
-        // new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, trackWidth / 2.0),
-        // new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, -trackWidth / 2.0)
+        // new edu.wpi.first.math.geometry.Translation2d(trackWidth / 2.0, -trackWidth / 2.0),
+        // new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, -trackWidth / 2.0),
+        // new edu.wpi.first.math.geometry.Translation2d(-trackWidth / 2.0, trackWidth / 2.0)
     };
 
     public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(swerveModuleLocations);

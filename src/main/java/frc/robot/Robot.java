@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("CorrectPath.wpilib.json");
+        swerve.loadTrajectory("RealCorrectPath.wpilib.json");
         autoState++;
       }
       if(autoState ==1){
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     // System.out.println(swerveTranslation.getY());
     // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
-    swerve.drive(swerveTranslation, swerveRotation, false, true);
+    swerve.drive(swerveTranslation, swerveRotation, true, true);
     swerve.updateSwerveOdometry();
   }
 

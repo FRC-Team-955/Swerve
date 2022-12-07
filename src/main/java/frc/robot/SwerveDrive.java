@@ -5,6 +5,8 @@ import java.nio.file.Path;
 
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.SPI;
+
+import com.kauailabs.navx.AHRSProtocol.AHRS_DATA_ACTION;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -38,7 +40,7 @@ public class SwerveDrive{
 
     private PIDController xController = new PIDController(0.7,0,0);
     private PIDController yController = new PIDController(0.7,0,0);
-    private ProfiledPIDController thetaController = new ProfiledPIDController(0.7,0,0, new TrapezoidProfile.Constraints(4.4, 5));
+    private ProfiledPIDController thetaController = new ProfiledPIDController(0.1,0,0, new TrapezoidProfile.Constraints(40, 180));
     public HolonomicDriveController autoController = new HolonomicDriveController(xController, yController, thetaController);
     public Trajectory trajectory = new Trajectory();
     public Trajectory turningTrajectory = new Trajectory();
@@ -72,7 +74,7 @@ public class SwerveDrive{
     }
 
     public SwerveDrive() {        
-        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(ahrs.getYaw()));
+        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(-ahrs.getYaw()));
         
         // snapPIDController = new ProfiledPIDController(Constants.SnapConstants.kP,
         //                                               Constants.SnapConstants.kI, 
@@ -89,7 +91,7 @@ public class SwerveDrive{
             new SwerveMod(3, 6, 7, 10, 44.5  + 2.37 - 5.274),
         };
     }
-
+/*
     // system.out.println("X " + swerveOdometry.getX);
     // system.out.println("Y " + swerveOdometry.getY);
 
@@ -117,13 +119,17 @@ public class SwerveDrive{
 
     // public void angleAlignDrive(Translation2d translation2d, double targetHeading, boolean fieldRelative) {
     //     snapPIDController.setGoal(new TrapezoidProfile.State(Math.toRadians(targetHeading), 0.0));
-    //     double angleAdjustment = snapPIDController.calculate(ahrs.getYaw());
+    //     double angleAdjustment = snapPIDController.calculate(-ahrs.getYaw());
     //     drive(translation2d, angleAdjustment, fieldRelative, false);
     // }
 
-    
+    */
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
+        System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
+        System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        System.out.println("Yaw: " + ahrs.getYaw());
         headingSetPoint += rotation * 0.24;
         // if(headingSetPoint > 179){
         //     headingSetPoint -= 360;
@@ -132,11 +138,10 @@ public class SwerveDrive{
         //     headingSetPoint += 360;
         // }
         // System.out.println("heading " + headingSetPoint);
-        // System.out.println("Navx " + ahrs.getAngle());
+        // System.out.println("Navx " + -ahrs.getAngle());
         // SmartDashboard.getNumber("Heading Set Point", headingSetPoint);
-        // SmartDashboard.getNumber("Navx", ahrs.getAngle());
-        System.out.println("X " + swerveOdometry.getPoseMeters().getX());
-        System.out.println("Y " + swerveOdometry.getPoseMeters().getY()*(6.4/6.3));
+        // SmartDashboard.getNumber("Navx", -ahrs.getAngle());
+
         // if (isSnapping) {
         //     if (Math.abs(rotation) == 0.0) {
         //         maybeStopSnap(false);
@@ -177,7 +182,7 @@ public class SwerveDrive{
         }
     }
 
-
+/*
 //     public void zeroHeading() {
 //     m_ahrs.zeroYaw();
 //     offset = 0;
@@ -185,8 +190,8 @@ public class SwerveDrive{
 //     }
 
 //      public Rotation2d getHeading() {
-//     float raw_yaw = m_ahrs.getYaw() - (float)offset; // Returns yaw as -180 to +180.
-//     // float raw_yaw = m_ahrs.getYaw(); // Returns yaw as -180 to +180.
+//     float raw_yaw = m_-ahrs.getYaw() - (float)offset; // Returns yaw as -180 to +180.
+//     // float raw_yaw = m_-ahrs.getYaw(); // Returns yaw as -180 to +180.
 //     float calc_yaw = raw_yaw;
 
 //     if (0.0 > raw_yaw ) { // yaw is negativez
@@ -224,7 +229,7 @@ public class SwerveDrive{
     //     }
     // }
 
-    // /* Used by SwerveControllerCommand in Auto */
+    // //Used by SwerveControllerCommand in Auto
     // public void setModuleStates(SwerveModuleState[] desiredStates) {
     //     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.SwerveConstants.maxSpeed);
         
@@ -234,11 +239,14 @@ public class SwerveDrive{
     //         SmartDashboard.putNumber("mod " + mod.moduleNumber +  " desired angle", MathUtil.inputModulus(desiredStates[mod.moduleNumber].angle.getDegrees(), 0, 180));
     //     }
     // }    
-
+    */
+        
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
     }
-
+    // public Pose2d getPose() {
+    //     return new Pose2d(swerveOdometry.getPoseMeters().getX(),swerveOdometry.getPoseMeters().getY(),new Rotation2d(0));
+    // }
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(pose, Rotation2d.fromDegrees(headingSetPoint));
         // zeroGyro(pose.getRotation().getDegrees());
@@ -279,7 +287,7 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
-        swerveOdometry.update(Rotation2d.fromDegrees(ahrs.getYaw()), getStates());
+        swerveOdometry.update(Rotation2d.fromDegrees(-ahrs.getYaw()), getStates());
         chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(
                     SwerveMods[0].getState(),
                     SwerveMods[1].getState(),
@@ -298,13 +306,15 @@ public class SwerveDrive{
             DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
         }
 
-        Json = deployDirectory.toString();
+        // Json = deployDirectory.toString();
 
 
         zeroGyro();
         ahrs.setAngleAdjustment(0);
         // ahrs.setAngleAdjustment(0);
          //                                                       The robot fields angle (in pathweaver rotation)
+        System.out.println("trajectory: " +trajectory.getInitialPose().getRotation());
+        //Rotation2d.fromDegrees(90)
         swerveOdometry.resetPosition(trajectory.getInitialPose(), trajectory.getInitialPose().getRotation());
         timer.reset();
         timer.start();
@@ -314,28 +324,51 @@ public class SwerveDrive{
      
         updateSwerveOdometry();
         Trajectory.State goal = trajectory.sample(timer.get());
-        System.out.println("Get Yaw: " + ahrs.getYaw());
-        System.out.println("Get Angle: " + ahrs.getAngle());
-        //                                         Init Heading in pathweaver
-        System.out.println("Init \"Rotation\": " + goal.curvatureRadPerMeter);
                     //                                                          rotation in Path Weaver
-        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(90));
+        ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(0));
+        System.out.println("X real: "+ getPose().getX());
+        System.out.println("Y real: "+ getPose().getY());
+
+        System.out.println("X goal: "+ goal.poseMeters.getX());
+        System.out.println("Y goal: "+ goal.poseMeters.getY());
+
+        System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        System.out.println("Yaw: " + ahrs.getYaw());
+
         adjustedSpeeds.vyMetersPerSecond *=-1;
+        // adjustedSpeeds.vxMetersPerSecond *=-1;
+
         System.out.println("Y Vel: " + adjustedSpeeds.vyMetersPerSecond);
         System.out.println("X Vel: " + adjustedSpeeds.vxMetersPerSecond);
-        System.out.println("Rot: " + adjustedSpeeds.omegaRadiansPerSecond);
-        SwerveModuleState[] swerveModuleStates = Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(adjustedSpeeds);
+
+        // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getYaw(), 90);
+        ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getYaw(), 90));
+
+        // SwerveModuleState[] swerveModuleStates =
+        //         Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
+        //             true ? ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                                 goal.velocityMetersPerSecond*goal.poseMeters.getRotation().getCos(), 
+        //                                 goal.velocityMetersPerSecond*goal.poseMeters.getRotation().getSin(), 
+        //                                 1, 
+        //                                 Rotation2d.fromDegrees(-ahrs.getYaw())
+        //                             )
+        //                             : new ChassisSpeeds(
+        //                                 adjustedSpeeds.vxMetersPerSecond, 
+        //                                 adjustedSpeeds.vyMetersPerSecond,
+        //                                 0.5)
+        //                             );
+        SwerveModuleState[] swerveModuleStates = Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(adjustedSpeeds2);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Settings.SwerveConstants.maxSpeed);
 
         for (SwerveMod mod : SwerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber]);
         }
-        System.out.println(timer.get());
+        System.out.println("Time: " +timer.get());
         // if (timer.get() > trajectory.getTotalTimeSeconds()){
         //     return true;
         // }
-        if (timer.get() > 10){
+        if (timer.get() > trajectory.getTotalTimeSeconds()){
             return true;
         }
         return false;
