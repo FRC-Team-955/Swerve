@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
       }
       if(autoState ==1){
         System.out.println("autostate1");
-        if(swerve.followTrajectory()){
+        if(swerve.followTrajectory(180)){
           autoState++;
         }
       }

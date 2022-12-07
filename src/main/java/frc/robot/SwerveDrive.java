@@ -322,7 +322,7 @@ public class SwerveDrive{
         timer.start();
     }
 
-    public boolean followTrajectory(){
+    public boolean followTrajectory(double holonomicRotation){
      
         updateSwerveOdometry();
         Trajectory.State goal = trajectory.sample(timer.get());
@@ -345,7 +345,7 @@ public class SwerveDrive{
 
         // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getYaw(), 90);
         // ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(0, 0, thetaController.calculate(ahrs.getYaw(), 90));
-        ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getYaw(), 90));
+        ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getYaw(), holonomicRotation));
 
         // SwerveModuleState[] swerveModuleStates =
         //         Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
