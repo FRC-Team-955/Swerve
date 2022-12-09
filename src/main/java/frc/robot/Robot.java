@@ -47,17 +47,29 @@ public class Robot extends TimedRobot {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("RealCorrectPath.wpilib.json");
+        swerve.loadTrajectory("1st.wpilib.json");
         autoState++;
       }
       if(autoState ==1){
         System.out.println("autostate1");
+        swerve.setNavx(0);
         if(swerve.followTrajectory(180)){
           autoState++;
         }
       }
       if(autoState ==2){
         System.out.println("autostate2");
+        swerve.loadTrajectory("2nd.wpilib.json");
+        autoState++;
+      }
+      if(autoState ==3){
+        System.out.println("autostate3");
+        if(swerve.followTrajectory(0)){
+          autoState++;
+        }
+      }
+      if(autoState ==4){
+        System.out.println("autostate4");
         swerve.drive(new Translation2d(0,0), 0, false, true);
       }
     }

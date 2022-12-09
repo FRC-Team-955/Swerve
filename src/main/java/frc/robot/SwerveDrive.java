@@ -50,6 +50,7 @@ public class SwerveDrive{
     public String File = "pathplanner/generatedJSON/CorrectPath.path"; 
     public String Json;
     public int array[] = {};   
+    public int initialRotation;
     // public Path deployDirectory = new Path();
 
 
@@ -311,11 +312,10 @@ public class SwerveDrive{
         // Json = deployDirectory.toString();
 
 
-        zeroGyro();
         ahrs.setAngleAdjustment(0);
         // ahrs.setAngleAdjustment(0);
          //                                                       The robot fields angle (in pathweaver rotation)
-        System.out.println("trajectory: " +trajectory.getInitialPose().getRotation());
+        // System.out.println("trajectory: " +trajectory.getInitialPose().getRotation());
         //Rotation2d.fromDegrees(90)
         swerveOdometry.resetPosition(trajectory.getInitialPose(), trajectory.getInitialPose().getRotation());
         timer.reset();
@@ -345,7 +345,7 @@ public class SwerveDrive{
 
         // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getYaw(), 90);
         // ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(0, 0, thetaController.calculate(ahrs.getYaw(), 90));
-        ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getYaw(), holonomicRotation));
+        ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getAngle(), holonomicRotation));
 
         // SwerveModuleState[] swerveModuleStates =
         //         Settings.SwerveConstants.swerveKinematics.toSwerveModuleStates(
@@ -371,10 +371,14 @@ public class SwerveDrive{
         // if (timer.get() > trajectory.getTotalTimeSeconds()){
         //     return true;
         // }
-        if (timer.get() > 100){
+        if (timer.get() > trajectory.getTotalTimeSeconds()){
             return true;
         }
         return false;
+    }
+
+    public void setNavx(double angle){
+        ahrs += angle;
     }
 
 
