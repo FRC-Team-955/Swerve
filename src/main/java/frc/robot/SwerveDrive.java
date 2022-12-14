@@ -48,9 +48,8 @@ public class SwerveDrive{
     public Trajectory turningTrajectory = new Trajectory();
     public Timer timer = new Timer();
     public String File = "pathplanner/generatedJSON/CorrectPath.path"; 
-    public String Json;
-    public int array[] = {};   
     public int initialRotation;
+    public double offset = 0;
     // public Path deployDirectory = new Path();
 
 
@@ -77,7 +76,7 @@ public class SwerveDrive{
     }
 
     public SwerveDrive() {        
-        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(-ahrs.getYaw()));
+        swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(getHeading()));
         
         // snapPIDController = new ProfiledPIDController(Constants.SnapConstants.kP,
         //                                               Constants.SnapConstants.kI, 
@@ -122,7 +121,7 @@ public class SwerveDrive{
 
     // public void angleAlignDrive(Translation2d translation2d, double targetHeading, boolean fieldRelative) {
     //     snapPIDController.setGoal(new TrapezoidProfile.State(Math.toRadians(targetHeading), 0.0));
-    //     double angleAdjustment = snapPIDController.calculate(-ahrs.getYaw());
+    //     double angleAdjustment = snapPIDController.calculate(-ahrs.getHeading());
     //     drive(translation2d, angleAdjustment, fieldRelative, false);
     // }
 
@@ -132,7 +131,7 @@ public class SwerveDrive{
         System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
         System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
         System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
-        System.out.println("Yaw: " + ahrs.getYaw());
+        System.out.println("Yaw: " + getHeading());
         headingSetPoint += rotation * 0.24;
         // if(headingSetPoint > 179){
         //     headingSetPoint -= 360;
@@ -169,7 +168,7 @@ public class SwerveDrive{
                                         translation.getX(), 
                                         translation.getY(), 
                                         controller.calculate(ahrs.getAngle(), headingSetPoint), 
-                                        Rotation2d.fromDegrees(ahrs.getYaw())
+                                        Rotation2d.fromDegrees(getHeading())
                                     )
                                     : new ChassisSpeeds(
                                         translation.getX(), 
@@ -193,8 +192,8 @@ public class SwerveDrive{
 //     }
 
 //      public Rotation2d getHeading() {
-//     float raw_yaw = m_-ahrs.getYaw() - (float)offset; // Returns yaw as -180 to +180.
-//     // float raw_yaw = m_-ahrs.getYaw(); // Returns yaw as -180 to +180.
+//     float raw_yaw = m_-ahrs.getHeading() - (float)offset; // Returns yaw as -180 to +180.
+//     // float raw_yaw = m_-ahrs.getHeading(); // Returns yaw as -180 to +180.
 //     float calc_yaw = raw_yaw;
 
 //     if (0.0 > raw_yaw ) { // yaw is negativez
@@ -206,11 +205,11 @@ public class SwerveDrive{
 
 
     // public double calculateSnapValue() {
-    //     return snapPIDController.calculate(mPigeon.getYaw().getRadians());
+    //     return snapPIDController.calculate(mPigeon.getHeading().getRadians());
     // }
 
     // public void startSnap(double snapAngle) {
-    //     snapPIDController.reset(mPigeon.getYaw().getRadians());
+    //     snapPIDController.reset(mPigeon.getHeading().getRadians());
     //     snapPIDController.setGoal(new TrapezoidProfile.State(Math.toRadians(snapAngle), 0.0));
     //     isSnapping = true;
     // }
@@ -218,7 +217,7 @@ public class SwerveDrive{
     // TimeDelayedBoolean delayedBoolean = new TimeDelayedBoolean();
 
     // private boolean snapComplete() {
-    //     double error = snapPIDController.getGoal().position - mPigeon.getYaw().getRadians();
+    //     double error = snapPIDController.getGoal().position - mPigeon.getHeading().getRadians();
     //     return delayedBoolean.update(Math.abs(error) < Math.toRadians(Constants.SnapConstants.kEpsilon), Constants.SnapConstants.kTimeout);
     // }
 
@@ -228,7 +227,7 @@ public class SwerveDrive{
     //     } 
     //     if (force || snapComplete()) {
     //         isSnapping = false;
-    //         snapPIDController.reset(mPigeon.getYaw().getRadians());
+    //         snapPIDController.reset(mPigeon.getHeading().getRadians());
     //     }
     // }
 
@@ -290,7 +289,8 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
-        swerveOdometry.update(Rotation2d.fromDegrees(-ahrs.getYaw()), getStates());
+        //Maybe keep negative
+        swerveOdometry.update(Rotation2d.fromDegrees(-getHeading()), getStates());
         chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(
                     SwerveMods[0].getState(),
                     SwerveMods[1].getState(),
@@ -331,20 +331,21 @@ public class SwerveDrive{
         System.out.println("X real: "+ getPose().getX());
         System.out.println("Y real: "+ getPose().getY());
 
-        System.out.println("X goal: "+ goal.poseMeters.getX());
-        System.out.println("Y goal: "+ goal.poseMeters.getY());
+        // System.out.println("X goal: "+ goal.poseMeters.getX());
+        // System.out.println("Y goal: "+ goal.poseMeters.getY());
 
+        System.out.println("Degrees" + ahrs.getAngle());
         System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
-        System.out.println("Yaw: " + ahrs.getYaw());
+        // System.out.println("Yaw: " + getHeading());
 
         adjustedSpeeds.vyMetersPerSecond *=-1;
         // adjustedSpeeds.vxMetersPerSecond *=-1;
 
-        System.out.println("Y Vel: " + adjustedSpeeds.vyMetersPerSecond);
-        System.out.println("X Vel: " + adjustedSpeeds.vxMetersPerSecond);
+        // System.out.println("Y Vel: " + adjustedSpeeds.vyMetersPerSecond);
+        // System.out.println("X Vel: " + adjustedSpeeds.vxMetersPerSecond);
 
-        // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getYaw(), 90);
-        // ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(0, 0, thetaController.calculate(ahrs.getYaw(), 90));
+        // adjustedSpeeds.omegaRadiansPerSecond = thetaController.calculate(ahrs.getHeading(), 90);
+        // ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(0, 0, thetaController.calculate(ahrs.getHeading(), 90));
         ChassisSpeeds adjustedSpeeds2 = new ChassisSpeeds(adjustedSpeeds.vxMetersPerSecond,adjustedSpeeds.vyMetersPerSecond, thetaController.calculate(ahrs.getAngle(), holonomicRotation));
 
         // SwerveModuleState[] swerveModuleStates =
@@ -353,7 +354,7 @@ public class SwerveDrive{
         //                                 goal.velocityMetersPerSecond*goal.poseMeters.getRotation().getCos(), 
         //                                 goal.velocityMetersPerSecond*goal.poseMeters.getRotation().getSin(), 
         //                                 1, 
-        //                                 Rotation2d.fromDegrees(-ahrs.getYaw())
+        //                                 Rotation2d.fromDegrees(-ahrs.getHeading())
         //                             )
         //                             : new ChassisSpeeds(
         //                                 adjustedSpeeds.vxMetersPerSecond, 
@@ -377,12 +378,21 @@ public class SwerveDrive{
         return false;
     }
 
-    public void setNavx(double angle){
-        ahrs += angle;
+    public float getHeading(){
+        float raw_yaw = ahrs.getYaw() - (float)offset; // Returns yaw as -180 to +180.
+        // float raw_yaw = m_ahrs.getHeading(); // Returns yaw as -180 to +180.
+        float calc_yaw = raw_yaw;
+    
+        if (0.0 > raw_yaw ) { // yaw is negative
+          calc_yaw += 360.0;
+        }
+        return calc_yaw;
+      }
+
+      public void setHeading(){
+          headingSetPoint = ahrs.getAngle();
+      }
+
     }
 
-
-
-
-}
 

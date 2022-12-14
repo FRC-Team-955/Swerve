@@ -47,12 +47,11 @@ public class Robot extends TimedRobot {
     if (true){
       if(autoState ==0){
         System.out.println("autostate0");
-        swerve.loadTrajectory("1st.wpilib.json");
+        swerve.loadTrajectory("New.wpilib.json");
         autoState++;
       }
       if(autoState ==1){
         System.out.println("autostate1");
-        swerve.setNavx(0);
         if(swerve.followTrajectory(180)){
           autoState++;
         }
@@ -77,7 +76,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    
+    swerve.setHeading();
 
   
   }

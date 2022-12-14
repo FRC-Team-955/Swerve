@@ -83,8 +83,8 @@ public class SwerveMod{
          // m_driveEncoder returns RPM by default. Use setVelocityConversionFactor() to
         // convert that to meters per second.
         //1.002187
-        m_driveEncoder.setVelocityConversionFactor(0.04284/ 60.0);
-        m_driveEncoder.setPositionConversionFactor(0.04284); //(0.098 * Math.PI) / 6.75
+        m_driveEncoder.setVelocityConversionFactor((1.0217 * 0.04284)/ 60.0);
+        m_driveEncoder.setPositionConversionFactor(0.04284 * 1.0217); //(0.098 * Math.PI) / 6.75
         m_driveEncoder.setPosition(0);
 
         // Angle PID
@@ -237,6 +237,7 @@ public class SwerveMod{
         double m2 = -(m_turningEncoder.getPosition() % 360 + 360) % 360;
 
         return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m2 * Math.PI / 180));
+        // return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m2 * Math.PI / 180));
         // // double velocity = Conversions.neoToMPS(driveEncoder.getVelocity(),Settings.SwerveConstants.driveGearRatio);
         // double m2 = (angleEncoder.getPosition() % 360 + 360) % 360;
         // Rotation2d angle = Rotation2d.fromDegrees(Conversions.neoToDegrees(angleEncoder.getAbsolutePosition(), Settings.SwerveConstants.angleGearRatio));
