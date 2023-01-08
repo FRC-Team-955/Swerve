@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import edu.wpi.first.wpilibj.SPI;
 
-import com.ctre.phoenix.sensors.Pigeon2;
 import com.kauailabs.navx.AHRSProtocol.AHRS_DATA_ACTION;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -51,11 +50,9 @@ public class SwerveDrive{
     public String File = "pathplanner/generatedJSON/CorrectPath.path"; 
     public int initialRotation;
     public double offset = 0;
-    public double angleToYaw;
     // public Path deployDirectory = new Path();
 
-    //Gyroscopes
-    Pigeon2 pigeon = new Pigeon2(0);
+
     AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
     // chassis velocity status
@@ -293,9 +290,9 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
-        System.out.println("Yaw: " + pigeon.getYaw());
+        System.out.println("Angle: " + ahrs.getAngle());
         System.out.println("Target: " + headingSetPoint);
-        // System.out.println("Yaw: " + pigeon.getYaw());
+        System.out.println("Yaw: " + ahrs.getYaw());
         //Maybe keep negative
         swerveOdometry.update(Rotation2d.fromDegrees(-getHeading()), getStates());
         chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(
@@ -398,11 +395,6 @@ public class SwerveDrive{
 
       public void setHeading(){
           headingSetPoint = ahrs.getAngle();
-      }
-
-      public void addYaw(){
-        angleToYaw = (startingValue - minimumValue + (offset % modulus) + modulus) % modulus + minimalValue;
-          
       }
 
     }
