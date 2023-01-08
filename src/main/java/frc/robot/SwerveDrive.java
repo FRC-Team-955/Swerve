@@ -92,6 +92,7 @@ public class SwerveDrive{
             new SwerveMod(2, 3, 2, 11, 33.8 + 0.09),
             new SwerveMod(3, 6, 7, 10, 44.5  + 2.37 - 5.274),
         };
+
     }
 /*
     // system.out.println("X " + swerveOdometry.getX);
@@ -128,10 +129,10 @@ public class SwerveDrive{
     */
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
-        System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
-        System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
-        System.out.println("Yaw: " + getHeading());
+        // System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
+        // System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
+        // System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        // System.out.println("Yaw: " + getHeading());
         headingSetPoint += rotation * 0.24;
         // if(headingSetPoint > 179){
         //     headingSetPoint -= 360;
@@ -289,6 +290,9 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
+        System.out.println("Angle: " + ahrs.getAngle());
+        System.out.println("Target: " + headingSetPoint);
+        System.out.println("Yaw: " + ahrs.getYaw());
         //Maybe keep negative
         swerveOdometry.update(Rotation2d.fromDegrees(-getHeading()), getStates());
         chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(
@@ -328,14 +332,14 @@ public class SwerveDrive{
         Trajectory.State goal = trajectory.sample(timer.get());
                     //                                                          rotation in Path Weaver
         ChassisSpeeds adjustedSpeeds = autoController.calculate(getPose(), goal, Rotation2d.fromDegrees(0));
-        System.out.println("X real: "+ getPose().getX());
-        System.out.println("Y real: "+ getPose().getY());
+        // System.out.println("X real: "+ getPose().getX());
+        // System.out.println("Y real: "+ getPose().getY());
 
         // System.out.println("X goal: "+ goal.poseMeters.getX());
         // System.out.println("Y goal: "+ goal.poseMeters.getY());
 
-        System.out.println("Degrees" + ahrs.getAngle());
-        System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        // System.out.println("Degrees" + ahrs.getAngle());
+        // System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
         // System.out.println("Yaw: " + getHeading());
 
         adjustedSpeeds.vyMetersPerSecond *=-1;
