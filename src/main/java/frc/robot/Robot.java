@@ -94,9 +94,9 @@ public class Robot extends TimedRobot {
 
     // fiducalCamera.getFiducalAngle();
     //fiducalCamera.getFiducalAngle()
-    System.out.println("camera: " + fiducalCamera.getFiducalYaw());
+    // System.out.println("camera: " + fiducalCamera.getFiducalYaw());
     // swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
-    // swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
+    swerve.translationAlignDrive(fiducalCamera.getFiducalYaw(),swerveRotation, false);
     // swerve.drive(swerveTranslation, fiducalCamera.getFiducalYaw(), false, true);
 
     swerve.updateSwerveOdometry();

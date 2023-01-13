@@ -129,11 +129,12 @@ public class SwerveDrive{
         System.out.println("angleAdjustment: " + angleAdjustment );
         drive(translation2d, angleAdjustment, fieldRelative, false);
     }
-    // public void translationAlignDrive(Translation2d targetTranslation, double rotation, boolean fieldRelative) {
-    //     double translationAdjustment = snapPIDController.calculate(0, targetTranslation);
-    //     System.out.println("targetTranslation: " + targetTranslation );
-    //     drive(targetTranslation, rotation, fieldRelative, false);
-    // }
+    public void translationAlignDrive(double targetTranslation, double rotation, boolean fieldRelative) {
+        double translationAdjustment = snapPIDController.calculate(0, targetTranslation);
+        System.out.println("targetTranslation: " + targetTranslation );
+
+        drive(new Translation2d(translationAdjustment*0.5, 0), rotation, fieldRelative, false);
+    }
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         // System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
         // System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
