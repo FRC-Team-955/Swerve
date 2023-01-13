@@ -18,6 +18,10 @@ public class Settings{
         public static final double driveKD = 0.0;
         public static final double driveKF = 2.96;
 
+        public static final double snapKP = 0.1;
+        public static final double snapKI = 0.0;
+        public static final double snapKD = 0.0;
+
     /* Drive Motor Characterization Values */
     public static final double driveKS = (0.32 / 12);
     public static final double driveKV = (1.51 / 12);

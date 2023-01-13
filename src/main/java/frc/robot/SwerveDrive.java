@@ -63,7 +63,7 @@ public class SwerveDrive{
 
     // public boolean isSnapping;
 
-    // public ProfiledPIDController snapPIDController;
+    public PIDController snapPIDController  = new PIDController(Settings.SwerveConstants.snapKP, Settings.SwerveConstants.snapKI, Settings.SwerveConstants.snapKD);;
     
     
     // Private boolean to lock Swerve wheels
@@ -81,10 +81,6 @@ public class SwerveDrive{
     public SwerveDrive() {        
         swerveOdometry = new SwerveDriveOdometry(Settings.SwerveConstants.swerveKinematics, Rotation2d.fromDegrees(getHeading()));
         
-        // snapPIDController = new ProfiledPIDController(Constants.SnapConstants.kP,
-        //                                               Constants.SnapConstants.kI, 
-        //                                               Constants.SnapConstants.kD,
-        //                                               Constants.SnapConstants.kThetaControllerConstraints);
         // snapPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         zeroGyro();
@@ -123,14 +119,19 @@ public class SwerveDrive{
     //     });
     // }
 
-    // public void angleAlignDrive(Translation2d translation2d, double targetHeading, boolean fieldRelative) {
-    //     snapPIDController.setGoal(new TrapezoidProfile.State(Math.toRadians(targetHeading), 0.0));
-    //     double angleAdjustment = snapPIDController.calculate(-ahrs.getHeading());
-    //     drive(translation2d, angleAdjustment, fieldRelative, false);
-    // }
+
 
     */
-
+    public void angleAlignDrive(Translation2d translation2d, double targetHeading, boolean fieldRelative) {
+        double angleAdjustment = snapPIDController.calculate(targetHeading, 0);
+        System.out.println("angleAdjustment: " + angleAdjustment );
+        drive(translation2d, angleAdjustment, fieldRelative, false);
+    }
+    public void translationAlignDrive(Translation2d targetTranslation, double rotation, boolean fieldRelative) {
+        double translationAdjustment = snapPIDController.calculate(0, targetTranslation);
+        System.out.println("targetTranslation: " + targetTranslation );
+        drive(targetTranslation, rotation, fieldRelative, false);
+    }
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         // System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
         // System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
@@ -405,5 +406,3 @@ public class SwerveDrive{
       }
 
     }
-
-

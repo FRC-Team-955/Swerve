@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
+import frc.robot.FiducalCamera;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -18,6 +20,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 public class Robot extends TimedRobot {
 
   private SwerveDrive swerve;
+  private FiducalCamera fiducalCamera;
+    
   private ControlBoard controlBoard;
   int autoState = 0;
 
@@ -28,6 +32,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     swerve = new SwerveDrive();
+    fiducalCamera = new FiducalCamera();
     controlBoard = new ControlBoard();
     swerve.resetAnglesToAbsolute();
     swerve.resetOdometry(new Pose2d(0,0, new Rotation2d(0)));
@@ -77,8 +82,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     swerve.setHeading();
-
-  
   }
 
   @Override
@@ -89,7 +92,14 @@ public class Robot extends TimedRobot {
     // System.out.println(swerveTranslation.getY());
     // Translation2d swerveTranslation = new Translation2d(1, 0);
     double swerveRotation = controlBoard.getSwerveRotation();
-    swerve.drive(swerveTranslation, swerveRotation, false, true);
+    // swerve.drive(swerveTranslation, swerveRotation, false, true);
+
+    // fiducalCamera.getFiducalAngle();
+    //fiducalCamera.getFiducalAngle()
+    swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
+    swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
+    // swerve.drive(swerveTranslation, fiducalCamera.getFiducalYaw(), false, true);
+
     swerve.updateSwerveOdometry();
   }
 
