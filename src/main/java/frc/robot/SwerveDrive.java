@@ -123,15 +123,17 @@ public class SwerveDrive{
 
     */
     public void angleAlignDrive(Translation2d translation2d, double targetHeading, boolean fieldRelative) {
+        System.out.println("targetHeading: " + targetHeading );
+
         double angleAdjustment = snapPIDController.calculate(targetHeading, 0);
         System.out.println("angleAdjustment: " + angleAdjustment );
         drive(translation2d, angleAdjustment, fieldRelative, false);
     }
-    public void translationAlignDrive(Translation2d targetTranslation, double rotation, boolean fieldRelative) {
-        double translationAdjustment = snapPIDController.calculate(0, targetTranslation);
-        System.out.println("targetTranslation: " + targetTranslation );
-        drive(targetTranslation, rotation, fieldRelative, false);
-    }
+    // public void translationAlignDrive(Translation2d targetTranslation, double rotation, boolean fieldRelative) {
+    //     double translationAdjustment = snapPIDController.calculate(0, targetTranslation);
+    //     System.out.println("targetTranslation: " + targetTranslation );
+    //     drive(targetTranslation, rotation, fieldRelative, false);
+    // }
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         // System.out.println("X: " + swerveOdometry.getPoseMeters().getX());
         // System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
@@ -294,9 +296,9 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
-        System.out.println("Angle: " + ahrs.getAngle());
-        System.out.println("Target: " + headingSetPoint);
-        System.out.println("NewAngle: " + newAngle);
+        // System.out.println("Angle: " + ahrs.getAngle());
+        // System.out.println("Target: " + headingSetPoint);
+        // System.out.println("NewAngle: " + newAngle);
         //Maybe keep negative
         swerveOdometry.update(Rotation2d.fromDegrees(-getHeading()), getStates());
         chassisVelocity = Settings.SwerveConstants.swerveKinematics.toChassisSpeeds(

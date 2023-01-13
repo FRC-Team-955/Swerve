@@ -31,9 +31,11 @@ public class FiducalCamera {
     double getFiducalYaw(){
         result = camera.getLatestResult();
         if( result.hasTargets()){
-            System.out.println("phtoon: " + -result.getBestTarget().getYaw());
-            return -result.getBestTarget().getYaw();
+            // System.out.println("in target: " + result.getBestTarget().getYaw());
+            return result.getBestTarget().getYaw();
         }
+        // System.out.println("no target");
+
         return 0;
     }
 

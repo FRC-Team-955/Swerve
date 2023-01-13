@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import frc.robot.FiducalCamera;
-
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -96,8 +94,9 @@ public class Robot extends TimedRobot {
 
     // fiducalCamera.getFiducalAngle();
     //fiducalCamera.getFiducalAngle()
-    swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
-    swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
+    System.out.println("camera: " + fiducalCamera.getFiducalYaw());
+    // swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
+    // swerve.angleAlignDrive(swerveTranslation,fiducalCamera.getFiducalYaw(), false);
     // swerve.drive(swerveTranslation, fiducalCamera.getFiducalYaw(), false, true);
 
     swerve.updateSwerveOdometry();
