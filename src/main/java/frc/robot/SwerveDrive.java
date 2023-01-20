@@ -38,7 +38,7 @@ public class SwerveDrive{
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
     public double headingSetPoint;
-    private PIDController controller = new PIDController(0.7,0,0);
+    private PIDController controller = new PIDController(0.3,0,0);
 
     private PIDController xController = new PIDController(0.7,0,0);
     private PIDController yController = new PIDController(0.7,0,0);
@@ -140,7 +140,7 @@ public class SwerveDrive{
         // System.out.println("Y: " + swerveOdometry.getPoseMeters().getY());
         // System.out.println("Degrees: " + swerveOdometry.getPoseMeters().getRotation().getDegrees());
         // System.out.println("Yaw: " + getHeading());
-        headingSetPoint += rotation * 0.24;
+        headingSetPoint += rotation * 0.5;
         // if(headingSetPoint > 179){
         //     headingSetPoint -= 360;
         // }
