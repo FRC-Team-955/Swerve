@@ -162,7 +162,7 @@ public class SwerveDrive{
         // }
        
         SwerveModuleState[] swerveModuleStates = null;
-        if (mLocked) {
+        if (true) {
             swerveModuleStates = new SwerveModuleState[]{
                 new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
                 new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
@@ -297,6 +297,7 @@ public class SwerveDrive{
     }
 
     public void updateSwerveOdometry(){
+
         // System.out.println("Angle: " + ahrs.getAngle());
         // System.out.println("Target: " + headingSetPoint);
         // System.out.println("NewAngle: " + newAngle);

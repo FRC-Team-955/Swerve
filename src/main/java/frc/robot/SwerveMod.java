@@ -181,6 +181,8 @@ public class SwerveMod{
     }
     
     public void setOpenLoopState(SwerveModuleState state) {
+
+
         Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
 
         double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
