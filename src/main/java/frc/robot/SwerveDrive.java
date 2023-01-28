@@ -38,7 +38,7 @@ public class SwerveDrive{
     public SwerveDriveOdometry swerveOdometry;
     public SwerveMod[] SwerveMods;
     public double headingSetPoint;
-    private PIDController controller = new PIDController(0.3,0,0);
+    private PIDController controller = new PIDController(0.07,0,0);
 
     private PIDController xController = new PIDController(0.7,0,0);
     private PIDController yController = new PIDController(0.7,0,0);
@@ -86,10 +86,10 @@ public class SwerveDrive{
         zeroGyro();
         SwerveMods = new SwerveMod[] {
             //MODULE 0 AND 3 MIGHT BE SLIGHTLY OFF
-            new SwerveMod(0, 4, 8, 9, 254.3 - 1.23 + 2.813),
-            new SwerveMod(1, 1, 5, 12, 121.4 - 0.88),
-            new SwerveMod(2, 3, 2, 11, 33.8 + 0.09),
-            new SwerveMod(3, 6, 7, 10, 44.5  + 2.37 - 5.274),
+            new SwerveMod(0, 4, 8, 9, 254.3 - 1.23 + 2.813-1.142-0.966),
+            new SwerveMod(1, 3, 2, 11, 123.8 - 0.09+0.176),
+            new SwerveMod(2, 6, 7, 10, 44.5  + 92.37 - 5.274 + 180-2.373),
+            new SwerveMod(3, 1, 5, 12, 124.4 + 135.88+-0.088-9.668),
         };
 
     }
@@ -162,12 +162,12 @@ public class SwerveDrive{
         // }
        
         SwerveModuleState[] swerveModuleStates = null;
-        if (true) {
+        if (false) {
             swerveModuleStates = new SwerveModuleState[]{
-                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(0))
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(0))
             };
         } else {
             swerveModuleStates =

@@ -145,7 +145,7 @@ public class SwerveMod{
 
     //TripleHelix 
     public void setDesiredState(SwerveModuleState state) {
-
+        System.out.println(moduleNumber + " " + angleEncoder.getAbsolutePosition());
         Rotation2d curAngle = Rotation2d.fromDegrees(m_turningEncoder.getPosition());
 
         double delta = deltaAdjustedAngle(state.angle.getDegrees(), curAngle.getDegrees());
